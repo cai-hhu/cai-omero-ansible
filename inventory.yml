@@ -81,4 +81,4 @@ all:
       - "omero-parade==0.2.4"
       - "omero-tagsearch==4.2.0"
       - "omero-autotag==4.0.1"
-
+      - "django-redis==5.0.0"
