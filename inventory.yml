@@ -1,0 +1,83 @@
+omero_servers:
+  hosts:
+    dev_omero:
+      ansible_host: {{ dev_omero_ip }} 
+
+  vars:
+    postgresql_version: "15"
+    omero_server_release: latest  # Will upgrade OMERO.server to latest version
+    omero_server_config_set:
+      omero.certificates.owner: "/C=DE/ST=NRW/L=Dusseldorf/O=CAi"
+      omero.client.icetransports: ssl,wss,tcp
+      omero.db.poolsize: 60
+      omero.jvmcfg.max_system_memory: 3072
+      omero.jvmcfg.percent.blitz: 50
+      omero.jvmcfg.percent.indexer: 20
+      omero.jvmcfg.percent.pixeldata: 20
+      omero.glacier2.IceSSL.Ciphers: "ADH:HIGH"
+      omero.glacier2.IceSSL.DefaultDir: /opt/omero/server/selfsigned
+      omero.glacier2.IceSSL.CAs: server.pem
+      omero.glacier2.IceSSL.CertFile: server.p12
+      omero.glacier2.IceSSL.Password: secret
+      omero.fs.repo.path: "%user%_%userId%/%thread%/%year%-%month%/%day%/%time%"
+      omero.pixeldata.max_projection_bytes: 1073741824
+      omero.policy.binary_access: "+read,+write,+image,+plate"
+    omero_server_python_addons:
+      - "omero-cli-duplicate"
+      - "omero-cli-render"
+      - "omero-metadata"
+      - "omero-py"
+      - "reportlab<3.6"
+      - markdown
+      - scipy
+      - matplotlib
+    omero_web_config_set:
+      omero.web.apps:
+        - "omero_iviewer"
+        - "omero_figure"
+        - "omero_parade"
+        - "omero_tagsearch"
+        - "omero_autotag"
+      omero.web.ui.center_plugins:
+        - ["Auto Tag", "omero_autotag/auto_tag_init.js.html", "auto_tag_panel"]
+        - ["Parade", "omero_parade/init.js.html", "omero_parade"]
+      omero.web.ui.top_links:
+        - ["Data", "webindex", {"title": "Browse Data via Projects, Tags etc"}]
+        - ["History", "history", {"title": "History"}]
+        - ["Help", "https://help.openmicroscopy.org/", {"title": "Open OMERO user guide in a new tab", "target": "new"}]
+        - ["Figure", "figure_index", {"title": "Open Figure in new tab", "target": "_blank"}]
+        - ["Tag Search", "tagsearch",  {"title": "Filter data using tags"}]
+      omero.web.open_with:
+        - ["Image viewer", "webgateway", {"supported_objects": ["image"], "script_url": "webclient/javascript/ome.openwith_viewer.js"}]
+        - ["omero_figure", "new_figure", {"supported_objects":["images"], "target": "_blank", "label": "OMERO.figure"}]
+        - - omero_iviewer
+          - omero_iviewer_index
+          - supported_objects:
+              - images
+              - dataset
+              - well
+            script_url: omero_iviewer/openwith.js
+            label: OMERO.iviewer
+      omero.web.viewer.view: omero_iviewer.views.index
+      omero.web.login_logo: https://omero-cai.hhu.de/static/webclient/image/Banner_CAi.png
+      omero.web.debug: true
+      omero.web.nginx_server_extra_config:
+        - "add_header Cross-Origin-Opener-Policy same-origin;"
+        - "add_header Cross-Origin-Embedder-Policy require-corp;"
+      omero.web.caches:
+        default:
+          BACKEND: "django_redis.cache.RedisCache"
+          LOCATION: "redis://127.0.0.1:6379/0"
+      omero.web.session_engine: "django.contrib.sessions.backends.cache"
+      omero_web_setup_redis_session: true
+      omero.web.iviewer.enable_mirror: true
+      omero.web.time_zone: Europe/Berlin
+      omero.web.show_forgot_password: false
+    omero_web_python_addons:
+      - "omero-py==5.19.5"
+      - "omero-iviewer==0.14.0"
+      - "omero-figure==7.1.0"
+      - "omero-parade==0.2.4"
+      - "omero-tagsearch==4.2.0"
+      - "omero-autotag==4.0.1"
+
