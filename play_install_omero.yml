@@ -29,3 +29,24 @@
 
     - role: ome.omero_web
 
+  tasks:
+    - name: Open firewalld port for omero.web
+      firewalld:
+        service: "{{ item }}"
+        permanent: yes
+        state: enabled
+      notify: reload firewalld
+      loop:
+        - https
+        - http
+
+    - name: Open firewalld port for omero.server
+      firewalld:
+        port: "{{ item }}"
+        permanent: yes
+        state: enabled
+      notify: reload firewalld
+      loop:
+        - 4063/tcp
+        - 4064/tcp
+
