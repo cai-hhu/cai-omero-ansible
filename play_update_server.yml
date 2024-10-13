@@ -5,6 +5,14 @@
       include_vars: "{{ ansible_facts['os_family'] | lower }}.yml"
       when: ansible_facts['os_family'] == "Debian"
 
+  vars_files:
+    - vars/vault.yml
+
   roles:
     - role: ome.omero_server
+      omero_server_rootpassword: "{{ omero_root_pwd }}"
+      omero_server_dbuser: "{{ omero_db_user }}"
+      omero_server_dbname: "{{ omero_db_name }}"
+      omero_server_dbpassword: "{{ omero_db_pwd }}"
+
 

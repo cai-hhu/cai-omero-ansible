@@ -1,7 +1,8 @@
-omero_servers:
+---
+
+all:
   hosts:
-    dev_omero:
-      ansible_host: {{ dev_omero_ip }} 
+    omero-dev 
 
   vars:
     postgresql_version: "15"
